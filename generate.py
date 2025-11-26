@@ -31,40 +31,80 @@ def parse_frontmatter(content):
     
     return frontmatter, parts[2].strip()
 
-def markdown_to_html(md_text):
-    """Basic markdown to HTML conversion."""
-    html = md_text
-    
-    # Headers
-    html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
-    html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
-    html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
-    
-    # Bold and italic
-    html = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', html)
-    html = re.sub(r'\*(.+?)\*', r'<em>\1</em>', html)
+def process_inline_markdown(text):
+    """Process inline markdown elements like bold, italic, code, links."""
+    # Bold and italic (before other markdown to avoid issues)
+    text = re.sub(r'\*\*(.+?)\*\*', r'<strong>\1</strong>', text)
+    text = re.sub(r'\*(.+?)\*', r'<em>\1</em>', text)
     
     # Links
-    html = re.sub(r'\[(.+?)\]\((.+?)\)', r'<a href="\2">\1</a>', html)
+    text = re.sub(r'\[(.+?)\]\((.+?)\)', r'<a href="\2">\1</a>', text)
     
-    # Code blocks
-    html = re.sub(r'```(.+?)```', r'<pre><code>\1</code></pre>', html, flags=re.DOTALL)
-    html = re.sub(r'`(.+?)`', r'<code>\1</code>', html)
+    # Inline code (not code blocks)
+    text = re.sub(r'`(.+?)`', r'<code>\1</code>', text)
     
-    # Blockquotes
-    html = re.sub(r'^> (.+)$', r'<blockquote>\1</blockquote>', html, flags=re.MULTILINE)
+    return text
+
+def markdown_to_html(md_text):
+    """Basic markdown to HTML conversion."""
+    # Split into blocks for better list handling
+    blocks = md_text.split('\n\n')
+    html_blocks = []
     
-    # Horizontal rules
-    html = re.sub(r'^---$', r'<hr>', html, flags=re.MULTILINE)
+    for block in blocks:
+        block = block.strip()
+        if not block:
+            continue
+            
+        # Check if this block is a list
+        lines = block.split('\n')
+        if lines[0].startswith('- ') or lines[0].startswith('* '):
+            # Unordered list
+            items = []
+            for line in lines:
+                if line.startswith('- ') or line.startswith('* '):
+                    item_text = process_inline_markdown(line[2:].strip())
+                    items.append(f'<li>{item_text}</li>')
+            html_blocks.append(f'<ul>\n{chr(10).join(items)}\n</ul>')
+            continue
+        elif re.match(r'^\d+\. ', lines[0]):
+            # Ordered list
+            items = []
+            for line in lines:
+                match = re.match(r'^\d+\. (.+)$', line)
+                if match:
+                    item_text = process_inline_markdown(match.group(1))
+                    items.append(f'<li>{item_text}</li>')
+            html_blocks.append(f'<ol>\n{chr(10).join(items)}\n</ol>')
+            continue
+        
+        # Not a list, process as before
+        html = block
+        
+        # Headers
+        html = re.sub(r'^### (.+)$', r'<h3>\1</h3>', html, flags=re.MULTILINE)
+        html = re.sub(r'^## (.+)$', r'<h2>\1</h2>', html, flags=re.MULTILINE)
+        html = re.sub(r'^# (.+)$', r'<h1>\1</h1>', html, flags=re.MULTILINE)
+        
+        # Code blocks (before inline code)
+        html = re.sub(r'```(.+?)```', r'<pre><code>\1</code></pre>', html, flags=re.DOTALL)
+        
+        # Apply inline markdown
+        html = process_inline_markdown(html)
+        
+        # Blockquotes
+        html = re.sub(r'^> (.+)$', r'<blockquote>\1</blockquote>', html, flags=re.MULTILINE)
+        
+        # Horizontal rules
+        html = re.sub(r'^---$', r'<hr>', html, flags=re.MULTILINE)
+        
+        # Wrap in paragraph if not already a block element
+        if not html.startswith('<'):
+            html = f'<p>{html}</p>'
+        
+        html_blocks.append(html)
     
-    # Paragraphs (simple approach: double newlines)
-    paragraphs = html.split('\n\n')
-    html = '\n\n'.join(
-        f'<p>{p}</p>' if not p.startswith('<') else p 
-        for p in paragraphs if p.strip()
-    )
-    
-    return html
+    return '\n\n'.join(html_blocks)
 
 def generate_post_html(slug, frontmatter, content_html):
     """Generate HTML for a single post."""
@@ -145,7 +185,7 @@ def generate_post_html(slug, frontmatter, content_html):
 </head>
 <body>
     <div class="nav">
-        <a href="/">← Back to Index</a>
+        <a href="index.html">← Back to Index</a>
     </div>
     
     <article>
