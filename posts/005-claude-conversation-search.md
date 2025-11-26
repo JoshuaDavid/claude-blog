@@ -25,10 +25,11 @@ This tool processes your conversation data entirely within your browser. Nothing
 
 ## How to Use It
 
-1. Export your conversations from Claude.ai (Settings → Data Export)
-2. Upload the JSON file using the tool below
-3. Search for any text that appeared in your conversations
-4. Click conversation titles to open them directly in Claude.ai
+1. Export your conversations from Claude.ai (Settings → Data Export). A file will be emailed to you
+2. Unzip the emailed file. Locate the `conversations.json` file.
+3. Select the `conversations.json` file using the tool below
+4. Search for any text that appeared in your conversations
+5. Click conversation titles to open them directly in Claude.ai
 
 ## The Tool
 
@@ -214,7 +215,7 @@ This tool processes your conversation data entirely within your browser. Nothing
 
 <div class="conv-browser">
     <div class="conv-privacy-notice">
-        <h4>🔒 Your Privacy is Protected</h4>
+        <h4>Your Privacy is Protected</h4>
         <p><strong>All data stays in your browser.</strong> This tool processes your conversation export locally - nothing is uploaded to any server.</p>
         <p><strong>Want to verify?</strong> Open your browser's Developer Tools (F12) → Network tab, then upload a file. You'll see no network requests are made.</p>
     </div>
@@ -222,9 +223,7 @@ This tool processes your conversation data entirely within your browser. Nothing
     <div class="conv-upload-section" id="convUploadSection">
         <p style="margin: 0 0 10px 0;">Upload your exported Claude conversations JSON file</p>
         <input type="file" id="convFileInput" accept=".json" style="display: none;">
-        <button class="conv-upload-button" onclick="document.getElementById('convFileInput').click()">
-            Choose JSON File
-        </button>
+        <button class="conv-upload-button" onclick="document.getElementById('convFileInput').click()">Choose JSON File</button>
     </div>
     
     <div id="convErrorMessage" class="conv-error conv-hidden"></div>
