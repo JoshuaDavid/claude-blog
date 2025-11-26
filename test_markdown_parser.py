@@ -93,6 +93,78 @@ def hello():
         self.assertEqual(blocks[0].language, 'python')
         self.assertIn('def hello():', blocks[0].content)
     
+    def test_code_block_with_markdown_syntax(self):
+        """Test that markdown syntax inside code blocks is treated literally."""
+        text = '''```
+# This is not a header
+**This is not bold**
+- This is not a list
+[link](url) is not a link
+```'''
+        blocks = self.parser.parse(text)
+        self.assertEqual(len(blocks), 1)
+        self.assertIsInstance(blocks[0], CodeBlock)
+        self.assertIn('# This is not a header', blocks[0].content)
+        self.assertIn('**This is not bold**', blocks[0].content)
+        self.assertIn('- This is not a list', blocks[0].content)
+    
+    def test_code_block_with_backticks_in_content(self):
+        """Test code block containing lines that look like fences (using longer fence)."""
+        text = '''`````
+# Here is my header
+
+```
+And some text after backticks
+
+# This is still in the code block
+`````'''
+        blocks = self.parser.parse(text)
+        self.assertEqual(len(blocks), 1)
+        self.assertIsInstance(blocks[0], CodeBlock)
+        content = blocks[0].content
+        self.assertIn('# Here is my header', content)
+        self.assertIn('```', content)
+        self.assertIn('And some text after backticks', content)
+        self.assertIn('# This is still in the code block', content)
+    
+    def test_code_block_fence_must_be_exact(self):
+        """Test that closing fence must be only backticks on its own line."""
+        text = '''```
+code line 1
+```not a fence
+code line 2
+```'''
+        blocks = self.parser.parse(text)
+        self.assertEqual(len(blocks), 1)
+        self.assertIsInstance(blocks[0], CodeBlock)
+        self.assertIn('```not a fence', blocks[0].content)
+        self.assertIn('code line 2', blocks[0].content)
+    
+    def test_code_block_variable_length_fences(self):
+        """Test that longer closing fences work with shorter opening fences."""
+        text = '''```
+content
+`````'''
+        blocks = self.parser.parse(text)
+        self.assertEqual(len(blocks), 1)
+        self.assertIsInstance(blocks[0], CodeBlock)
+        self.assertEqual(blocks[0].content, 'content')
+    
+    def test_code_block_short_fence_inside_long_fence(self):
+        """Test that you can use ``` inside a code block with ````` fences."""
+        text = '''`````
+Some code:
+```
+inner code
+```
+More content
+`````'''
+        blocks = self.parser.parse(text)
+        self.assertEqual(len(blocks), 1)
+        self.assertIsInstance(blocks[0], CodeBlock)
+        self.assertIn('```', blocks[0].content)
+        self.assertIn('inner code', blocks[0].content)
+    
     def test_horizontal_rules(self):
         """Test various horizontal rule styles."""
         for rule in ['---', '***', '___', '-----', '*****']:
@@ -509,6 +581,53 @@ Paragraph 2'''
         self.assertIn('&amp;', html)
         self.assertIn('&quot;', html)
         self.assertIn('&#39;', html)
+    
+    def test_code_block_with_fake_fences(self):
+        """Test code blocks containing ``` using longer fences."""
+        md = '''`````
+# Here is my header
+
+```
+And some monospaced code
+
+# This should be part of the code block, not a separate h1
+
+This paragraph too
+
+- And this
+- Should not be a list
+`````
+
+But this should not be a part of the code block
+
+- And this
+- Should be a list'''
+        
+        html = markdown_to_html(md)
+        
+        # The code block should contain all the markdown-like content
+        self.assertIn('<pre><code>', html)
+        
+        # Extract the code block content
+        code_start = html.find('<pre><code>')
+        code_end = html.find('</code></pre>')
+        code_content = html[code_start:code_end]
+        
+        # These should all be in the code block
+        self.assertIn('# Here is my header', code_content)
+        self.assertIn('```', code_content)  # The short fence as content
+        self.assertIn('And some monospaced code', code_content)
+        self.assertIn('This should be part of the code block', code_content)
+        self.assertIn('This paragraph too', code_content)
+        self.assertIn('- And this', code_content)
+        self.assertIn('- Should not be a list', code_content)
+        
+        # After the code block, we should have proper markdown parsing
+        after_code = html[code_end + len('</code></pre>'):]
+        self.assertIn('<p>But this should not be a part of the code block</p>', after_code)
+        self.assertIn('<ul>', after_code)
+        self.assertIn('<li>And this</li>', after_code)
+        self.assertIn('<li>Should be a list</li>', after_code)
 
 
 class TestEdgeCases(unittest.TestCase):

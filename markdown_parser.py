@@ -239,17 +239,40 @@ class BlockParser:
         return blocks
     
     def _parse_code_block(self, lines: List[str], start: int) -> Optional[tuple[Block, int]]:
-        """Parse fenced code block (```language)."""
-        if not lines[start].startswith('```'):
+        """Parse fenced code block with support for variable-length fences.
+        
+        To include ``` in content, use longer fences like `````
+        """
+        line = lines[start]
+        if not line.startswith('```'):
             return None
         
-        # Extract language
-        first_line = lines[start][3:].strip()
+        # Count the fence length (number of backticks)
+        fence_len = 0
+        for char in line:
+            if char == '`':
+                fence_len += 1
+            else:
+                break
+        
+        if fence_len < 3:
+            return None
+        
+        # Extract language (everything after the backticks on the first line)
+        first_line = line[fence_len:].strip()
         language = first_line if first_line else None
         
-        # Find closing fence
+        # Find closing fence - must have at least as many backticks, alone on the line
         end = start + 1
-        while end < len(lines) and not lines[end].startswith('```'):
+        while end < len(lines):
+            close_line = lines[end].strip()
+            # Check if this line is only backticks
+            if close_line and all(c == '`' for c in close_line):
+                # Count backticks
+                close_fence_len = len(close_line)
+                # Closing fence must be at least as long as opening fence
+                if close_fence_len >= fence_len:
+                    break
             end += 1
         
         if end >= len(lines):
