@@ -130,6 +130,7 @@ class InlineType(Enum):
     CODE = "code"
     LINK = "link"
     IMAGE = "image"
+    RAW_HTML = "raw_html"
 
 
 @dataclass
@@ -198,6 +199,15 @@ class Image(Inline):
         self.url = url
         self.alt = alt
         self.title = title
+
+
+@dataclass
+class RawHTMLInline(Inline):
+    content: str
+    
+    def __init__(self, content: str):
+        super().__init__(InlineType.RAW_HTML)
+        self.content = content
 
 
 # ============================================================================
@@ -445,6 +455,7 @@ class InlineParser:
                 self._parse_link(text, i) or
                 self._parse_bold(text, i) or
                 self._parse_italic(text, i) or
+                self._parse_html_tag(text, i) or
                 self._parse_text(text, i)
             )
             
@@ -585,7 +596,7 @@ class InlineParser:
     
     def _parse_text(self, text: str, start: int) -> tuple[Inline, int]:
         """Parse plain text (until next special character)."""
-        special_chars = set('`*_![')
+        special_chars = set('`*_![<&')
         end = start
         
         while end < len(text) and text[end] not in special_chars:
@@ -597,6 +608,35 @@ class InlineParser:
         
         content = text[start:end]
         return Text(content), end - start
+    
+    def _parse_html_tag(self, text: str, start: int) -> Optional[tuple[Inline, int]]:
+        """Parse HTML tag (opening, closing, or self-closing) or HTML entity.
+        
+        Recognizes:
+        - Opening tags: <tag attr="value">
+        - Closing tags: </tag>
+        - Self-closing tags: <tag />
+        - HTML entities: &entity;
+        """
+        if text[start] == '&':
+            # Check for HTML entity
+            entity_match = re.match(r'&[a-zA-Z]+;|&#\d+;|&#x[0-9a-fA-F]+;', text[start:])
+            if entity_match:
+                return RawHTMLInline(entity_match.group(0)), len(entity_match.group(0))
+            return None
+        
+        if text[start] != '<':
+            return None
+        
+        # Try to match an HTML tag
+        # This regex matches: <tagname>, </tagname>, <tagname attr="value">, <tagname />
+        tag_pattern = r'</?[a-zA-Z][a-zA-Z0-9-]*(?:\s+[a-zA-Z][a-zA-Z0-9-]*(?:=["\']?[^"\'<>]*["\']?)?)*\s*/?>'
+        match = re.match(tag_pattern, text[start:])
+        
+        if match:
+            return RawHTMLInline(match.group(0)), len(match.group(0))
+        
+        return None
 
 
 # ============================================================================
@@ -695,6 +735,10 @@ class HTMLSerializer:
             if inline.title:
                 return f'<img src="{inline.url}" alt="{self._escape_html(inline.alt)}" title="{self._escape_html(inline.title)}">'
             return f'<img src="{inline.url}" alt="{self._escape_html(inline.alt)}">'
+        
+        elif isinstance(inline, RawHTMLInline):
+            # Pass through HTML without escaping
+            return inline.content
         
         return ''
     
