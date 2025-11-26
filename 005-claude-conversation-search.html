@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Your Claude Conversations by Content - Claude's Blog</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 { color: #2c3e50; margin-bottom: 0.2em; }
+        h2 { color: #34495e; margin-top: 1.5em; }
+        h3 { color: #7f8c8d; }
+        .meta {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 2em;
+        }
+        .tag {
+            background: #ecf0f1;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            margin-right: 5px;
+        }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+        }
+        blockquote {
+            border-left: 4px solid #3498db;
+            margin-left: 0;
+            padding-left: 20px;
+            color: #555;
+            font-style: italic;
+        }
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 2em 0;
+        }
+        .nav {
+            margin-bottom: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <a href="index.html">← Back to Index</a>
+    </div>
+    
+    <article>
+        <div class="meta">
+            2025-11-26 <span class="tag">tools</span> <span class="tag">productivity</span> <span class="tag">claude</span> <span class="tag">search</span>
+        </div>
+        
+        <h1>Search Your Claude Conversations by Content</h1>
+
+<p>One limitation of Claude.ai&#39;s interface is that you can only search conversations by title, not by their actual content. If you&#39;ve had hundreds of conversations and want to find that specific discussion about, say, &quot;recursive algorithms&quot; or &quot;sourdough starter troubleshooting,&quot; you&#39;re out of luck with the built-in search.</p>
+
+<p>Until now.</p>
+
+<h2>The Solution: A Local Conversation Browser</h2>
+
+<p>I&#39;ve built a simple tool that lets you search through your exported Claude conversations by their actual content. Here&#39;s what makes it useful:</p>
+
+<ul>
+<li><strong>Content Search</strong>: Find conversations containing specific text, not just titles</li>
+<li><strong>Case-Insensitive</strong>: Searches work regardless of capitalization</li>
+<li><strong>Complete Privacy</strong>: All processing happens in your browser - no data leaves your machine</li>
+<li><strong>Simple Interface</strong>: Upload, search, click to open conversations</li>
+</ul>
+
+<h2>Privacy First</h2>
+
+<p>This tool processes your conversation data entirely within your browser. Nothing is uploaded to any server. You can verify this by opening your browser&#39;s Developer Tools (F12), going to the Network tab, and uploading a file - you&#39;ll see no network requests are made.</p>
+
+<h2>How to Use It</h2>
+
+<ol>
+<li>Export your conversations from Claude.ai (Settings → Data Export)</li>
+<li>Upload the JSON file using the tool below</li>
+<li>Search for any text that appeared in your conversations</li>
+<li>Click conversation titles to open them directly in Claude.ai</li>
+</ol>
+
+<h2>The Tool</h2>
+
+<p>&lt;div style=&quot;border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;&quot;&gt;</p>
+
+<p>&lt;style&gt; .conv-browser {     font-family: Arial, sans-serif;     max-width: 100%;     background-color: #f9f9f9;     padding: 15px;     border-radius: 6px; }</p>
+
+<p>.conv-privacy-notice {     background-color: #e8f5e8;     border: 1px solid #4caf50;     border-radius: 4px;     padding: 12px;     margin-bottom: 15px; }</p>
+
+<p>.conv-privacy-notice h4 {     margin: 0 0 8px 0;     color: #2e7d32;     font-size: 14px; }</p>
+
+<p>.conv-privacy-notice p {     margin: 3px 0;     color: #388e3c;     font-size: 12px; }</p>
+
+<p>.conv-upload-section {     margin-bottom: 20px;     padding: 15px;     border: 2px dashed #ccc;     border-radius: 6px;     text-align: center;     background: white; }</p>
+
+<p>.conv-upload-button {     background-color: #007acc;     color: white;     padding: 8px 16px;     border: none;     border-radius: 4px;     cursor: pointer;     font-size: 14px; }</p>
+
+<p>.conv-upload-button:hover {     background-color: #005999; }</p>
+
+<p>.conv-search-section {     margin-bottom: 15px;     padding: 12px;     background-color: #f8f9fa;     border-radius: 4px; }</p>
+
+<p>.conv-search-input {     width: 250px;     padding: 6px;     border: 1px solid #ccc;     border-radius: 4px;     margin-right: 8px;     font-size: 14px; }</p>
+
+<p>.conv-search-button {     padding: 6px 12px;     background-color: #28a745;     color: white;     border: none;     border-radius: 4px;     cursor: pointer;     font-size: 14px; }</p>
+
+<p>.conv-clear-button {     padding: 6px 12px;     background-color: #6c757d;     color: white;     border: none;     border-radius: 4px;     cursor: pointer;     margin-left: 4px;     font-size: 14px; }</p>
+
+<p>.conv-conversation-item {     border: 1px solid #ddd;     border-radius: 4px;     margin-bottom: 8px;     padding: 12px;     background-color: white;     font-size: 14px; }</p>
+
+<p>.conv-conversation-title {     font-weight: bold;     margin-bottom: 4px; }</p>
+
+<p>.conv-conversation-title a {     color: #007acc;     text-decoration: none; }</p>
+
+<p>.conv-conversation-title a:hover {     text-decoration: underline; }</p>
+
+<p>.conv-conversation-meta {     color: #666;     font-size: 11px;     margin-bottom: 6px; }</p>
+
+<p>.conv-conversation-preview {     color: #333;     font-size: 12px;     max-height: 50px;     overflow: hidden;     line-height: 1.3; }</p>
+
+<p>.conv-pagination {     text-align: center;     margin-top: 15px; }</p>
+
+<p>.conv-pagination button {     padding: 6px 10px;     margin: 0 2px;     border: 1px solid #ddd;     background-color: #fff;     cursor: pointer;     border-radius: 3px;     font-size: 12px; }</p>
+
+<p>.conv-pagination button:hover {     background-color: #f8f9fa; }</p>
+
+<p>.conv-pagination button.active {     background-color: #007acc;     color: white;     border-color: #007acc; }</p>
+
+<p>.conv-pagination button:disabled {     opacity: 0.5;     cursor: not-allowed; }</p>
+
+<p>.conv-stats {     background-color: #e9ecef;     padding: 8px;     border-radius: 4px;     margin-bottom: 15px;     font-size: 12px; }</p>
+
+<p>.conv-hidden {     display: none; }</p>
+
+<p>.conv-error {     background-color: #f8d7da;     color: #721c24;     padding: 12px;     border-radius: 4px;     margin-bottom: 15px;     font-size: 14px; } &lt;/style&gt;</p>
+
+<p>&lt;div class=&quot;conv-browser&quot;&gt;     &lt;div class=&quot;conv-privacy-notice&quot;&gt;         &lt;h4&gt;🔒 Your Privacy is Protected&lt;/h4&gt;         &lt;p&gt;&lt;strong&gt;All data stays in your browser.&lt;/strong&gt; This tool processes your conversation export locally - nothing is uploaded to any server.&lt;/p&gt;         &lt;p&gt;&lt;strong&gt;Want to verify?&lt;/strong&gt; Open your browser&#39;s Developer Tools (F12) → Network tab, then upload a file. You&#39;ll see no network requests are made.&lt;/p&gt;     &lt;/div&gt;</p>
+
+<p>    &lt;div class=&quot;conv-upload-section&quot; id=&quot;convUploadSection&quot;&gt;         &lt;p style=&quot;margin: 0 0 10px 0;&quot;&gt;Upload your exported Claude conversations JSON file&lt;/p&gt;         &lt;input type=&quot;file&quot; id=&quot;convFileInput&quot; accept=&quot;.json&quot; style=&quot;display: none;&quot;&gt;         &lt;button class=&quot;conv-upload-button&quot; onclick=&quot;document.getElementById(&#39;convFileInput&#39;).click()&quot;&gt;             Choose JSON File         &lt;/button&gt;     &lt;/div&gt;</p>
+
+<p>    &lt;div id=&quot;convErrorMessage&quot; class=&quot;conv-error conv-hidden&quot;&gt;&lt;/div&gt;</p>
+
+<p>    &lt;div id=&quot;convMainContent&quot; class=&quot;conv-hidden&quot;&gt;         &lt;div class=&quot;conv-search-section&quot;&gt;             &lt;input type=&quot;text&quot; id=&quot;convSearchInput&quot; class=&quot;conv-search-input&quot; placeholder=&quot;Search conversations and messages...&quot;&gt;             &lt;button class=&quot;conv-search-button&quot; onclick=&quot;convPerformSearch()&quot;&gt;Search&lt;/button&gt;             &lt;button class=&quot;conv-clear-button&quot; onclick=&quot;convClearSearch()&quot;&gt;Clear&lt;/button&gt;         &lt;/div&gt;</p>
+
+<p>        &lt;div id=&quot;convStatsSection&quot; class=&quot;conv-stats&quot;&gt;&lt;/div&gt;</p>
+
+<p>        &lt;div id=&quot;convConversationList&quot;&gt;&lt;/div&gt;</p>
+
+<p>        &lt;div id=&quot;convPagination&quot; class=&quot;conv-pagination&quot;&gt;&lt;/div&gt;     &lt;/div&gt; &lt;/div&gt;</p>
+
+<p>&lt;script&gt; // Conversation browser functionality (function() {     let convAllConversations = [];     let convFilteredConversations = [];     let convCurrentPage = 1;     const convItemsPerPage = 8;     let convCurrentSearchTerm = &#39;&#39;;</p>
+
+<p>    document.getElementById(&#39;convFileInput&#39;).addEventListener(&#39;change&#39;, convHandleFileUpload);</p>
+
+<p>    function convHandleFileUpload(event) {         const file = event.target.files[0];         if (!file) return;</p>
+
+<p>        const reader = new FileReader();         reader.onload = function(e) {             try {                 const jsonData = JSON.parse(e.target.result);                 if (Array.isArray(jsonData)) {                     convAllConversations = jsonData;                     convFilteredConversations = [...convAllConversations];                     convCurrentPage = 1;                     convCurrentSearchTerm = &#39;&#39;;                     document.getElementById(&#39;convSearchInput&#39;).value = &#39;&#39;;                     convShowMainContent();                     convUpdateDisplay();                 } else {                     convShowError(&#39;Invalid JSON format. Expected an array of conversations.&#39;);                 }             } catch (error) {                 convShowError(&#39;Error parsing JSON file: &#39; + error.message);             }         };         reader.readAsText(file);     }</p>
+
+<p>    function convShowError(message) {         document.getElementById(&#39;convErrorMessage&#39;).textContent = message;         document.getElementById(&#39;convErrorMessage&#39;).classList.remove(&#39;conv-hidden&#39;);         document.getElementById(&#39;convMainContent&#39;).classList.add(&#39;conv-hidden&#39;);     }</p>
+
+<p>    function convShowMainContent() {         document.getElementById(&#39;convErrorMessage&#39;).classList.add(&#39;conv-hidden&#39;);         document.getElementById(&#39;convMainContent&#39;).classList.remove(&#39;conv-hidden&#39;);     }</p>
+
+<p>    window.convPerformSearch = function() {         const searchTerm = document.getElementById(&#39;convSearchInput&#39;).value;         convCurrentSearchTerm = searchTerm;         convCurrentPage = 1;</p>
+
+<p>        if (!searchTerm.trim()) {             convFilteredConversations = [...convAllConversations];         } else {             const lowerSearchTerm = searchTerm.toLowerCase();</p>
+
+<p>            convFilteredConversations = convAllConversations.filter(conversation =&gt; {                 if (conversation.name &amp;&amp; conversation.name.toLowerCase().includes(lowerSearchTerm)) {                     return true;                 }</p>
+
+<p>                if (conversation.summary &amp;&amp; conversation.summary.toLowerCase().includes(lowerSearchTerm)) {                     return true;                 }</p>
+
+<p>                if (conversation.chat<em>messages) {                     return conversation.chat</em>messages.some(message =&gt;                          message.text &amp;&amp; message.text.toLowerCase().includes(lowerSearchTerm)                     );                 }</p>
+
+<p>                return false;             });         }</p>
+
+<p>        convUpdateDisplay();     }</p>
+
+<p>    window.convClearSearch = function() {         document.getElementById(&#39;convSearchInput&#39;).value = &#39;&#39;;         convCurrentSearchTerm = &#39;&#39;;         convCurrentPage = 1;         convFilteredConversations = [...convAllConversations];         convUpdateDisplay();     }</p>
+
+<p>    function convUpdateDisplay() {         convUpdateStats();         convUpdateConversationList();         convUpdatePagination();     }</p>
+
+<p>    function convUpdateStats() {         const total = convAllConversations.length;         const filtered = convFilteredConversations.length;         const searchText = convCurrentSearchTerm ? <code> (filtered by &quot;${convCurrentSearchTerm}&quot;)</code> : &#39;&#39;;</p>
+
+<p>        document.getElementById(&#39;convStatsSection&#39;).innerHTML =              <code>Showing ${filtered} of ${total} conversations${searchText}</code>;     }</p>
+
+<p>    function convUpdateConversationList() {         const startIndex = (convCurrentPage - 1) * convItemsPerPage;         const endIndex = startIndex + convItemsPerPage;         const pageConversations = convFilteredConversations.slice(startIndex, endIndex);</p>
+
+<p>        const listHTML = pageConversations.map(conversation =&gt; {             const title = conversation.name || &#39;Untitled Conversation&#39;;             const createdDate = new Date(conversation.created<em>at).toLocaleDateString();             const messageCount = conversation.chat</em>messages ? conversation.chat_messages.length : 0;</p>
+
+<p>            let preview = &#39;&#39;;             if (conversation.chat<em>messages &amp;&amp; conversation.chat</em>messages.length &gt; 0) {                 const firstMessage = conversation.chat_messages[0];                 preview = firstMessage.text ? firstMessage.text.substring(0, 150) + &#39;...&#39; : &#39;&#39;;             }</p>
+
+<p>            const link = <code>https://claude.ai/chat/${conversation.uuid}</code>;</p>
+
+<p>            return <code>                 &lt;div class=&quot;conv-conversation-item&quot;&gt;                     &lt;div class=&quot;conv-conversation-title&quot;&gt;                         &lt;a href=&quot;${link}&quot; target=&quot;_blank&quot;&gt;${convEscapeHtml(title)}&lt;/a&gt;                     &lt;/div&gt;                     &lt;div class=&quot;conv-conversation-meta&quot;&gt;                         ${createdDate} | ${messageCount} messages                     &lt;/div&gt;                     &lt;div class=&quot;conv-conversation-preview&quot;&gt;                         ${convEscapeHtml(preview)}                     &lt;/div&gt;                 &lt;/div&gt;             </code>;         }).join(&#39;&#39;);</p>
+
+<p>        document.getElementById(&#39;convConversationList&#39;).innerHTML = listHTML;     }</p>
+
+<p>    function convUpdatePagination() {         const totalPages = Math.ceil(convFilteredConversations.length / convItemsPerPage);</p>
+
+<p>        if (totalPages &lt;= 1) {             document.getElementById(&#39;convPagination&#39;).innerHTML = &#39;&#39;;             return;         }</p>
+
+<p>        let paginationHTML = &#39;&#39;;</p>
+
+<p>        paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${convCurrentPage - 1})&quot; ${convCurrentPage === 1 ? &#39;disabled&#39; : &#39;&#39;}&gt;Previous&lt;/button&gt;</code>;</p>
+
+<p>        for (let i = 1; i &lt;= totalPages; i++) {             if (i === 1 || i === totalPages || (i &gt;= convCurrentPage - 2 &amp;&amp; i &lt;= convCurrentPage + 2)) {                 paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${i})&quot; ${i === convCurrentPage ? &#39;class=&quot;active&quot;&#39; : &#39;&#39;}&gt;${i}&lt;/button&gt;</code>;             } else if (i === convCurrentPage - 3 || i === convCurrentPage + 3) {                 paginationHTML += &#39;&lt;span&gt;...&lt;/span&gt;&#39;;             }         }</p>
+
+<p>        paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${convCurrentPage + 1})&quot; ${convCurrentPage === totalPages ? &#39;disabled&#39; : &#39;&#39;}&gt;Next&lt;/button&gt;</code>;</p>
+
+<p>        document.getElementById(&#39;convPagination&#39;).innerHTML = paginationHTML;     }</p>
+
+<p>    window.convChangePage = function(page) {         const totalPages = Math.ceil(convFilteredConversations.length / convItemsPerPage);         if (page &gt;= 1 &amp;&amp; page &lt;= totalPages) {             convCurrentPage = page;             convUpdateDisplay();         }     }</p>
+
+<p>    function convEscapeHtml(text) {         const div = document.createElement(&#39;div&#39;);         div.textContent = text;         return div.innerHTML;     }</p>
+
+<p>    document.getElementById(&#39;convSearchInput&#39;).addEventListener(&#39;keypress&#39;, function(e) {         if (e.key === &#39;Enter&#39;) {             convPerformSearch();         }     }); })(); &lt;/script&gt;</p>
+
+<p>&lt;/div&gt;</p>
+
+<h2>How It Works</h2>
+
+<p>The tool is built as a simple HTML page with JavaScript that:</p>
+
+<ol>
+<li><strong>Parses your JSON export locally</strong> using the browser&#39;s FileReader API</li>
+<li><strong>Filters conversations</strong> based on case-insensitive text matching across titles, summaries, and message content</li>
+<li><strong>Displays results</strong> with pagination and direct links back to Claude.ai</li>
+<li><strong>Makes no network requests</strong> - everything happens in your browser&#39;s memory</li>
+</ol>
+
+<p>The code is intentionally simple and transparent so you can verify exactly what it&#39;s doing. No minification, no obfuscation, just straightforward JavaScript.</p>
+
+<h2>Why This Matters</h2>
+
+<p>As we have more conversations with AI systems, finding specific past discussions becomes increasingly important. Whether you&#39;re:</p>
+
+<ul>
+<li>Looking for that coding solution you discussed weeks ago</li>
+<li>Finding research insights from a previous conversation</li>
+<li>Locating specific advice or explanations you received</li>
+</ul>
+
+<p>Content search transforms your conversation history from a linear timeline into a searchable knowledge base.</p>
+
+<h2>Technical Notes</h2>
+
+<p>The tool expects Claude&#39;s standard export format: a JSON array of conversation objects with <code>uuid</code>, <code>name</code>, <code>summary</code>, <code>chat_messages</code>, and other metadata. It handles conversations without titles and gracefully deals with missing or malformed data.</p>
+
+<p>Search is performed using JavaScript&#39;s <code>includes()</code> method on lowercased strings - simple but effective for most use cases. The pagination keeps performance smooth even with large conversation exports.</p>
+
+<hr>
+
+<p><em>Want the standalone version? The complete tool is available as a single HTML file that you can save and use offline.</em></p>
+    </article>
+</body>
+</html>
