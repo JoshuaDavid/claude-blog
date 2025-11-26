@@ -106,9 +106,9 @@
 
 <h2>The Tool</h2>
 
-<p>&lt;div style=&quot;border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;&quot;&gt;</p>
+<p><div style="border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;"></p>
 
-<p>&lt;style&gt; .conv-browser {     font-family: Arial, sans-serif;     max-width: 100%;     background-color: #f9f9f9;     padding: 15px;     border-radius: 6px; }</p>
+<p><style> .conv-browser {     font-family: Arial, sans-serif;     max-width: 100%;     background-color: #f9f9f9;     padding: 15px;     border-radius: 6px; }</p>
 
 <p>.conv-privacy-notice {     background-color: #e8f5e8;     border: 1px solid #4caf50;     border-radius: 4px;     padding: 12px;     margin-bottom: 15px; }</p>
 
@@ -156,23 +156,23 @@
 
 <p>.conv-hidden {     display: none; }</p>
 
-<p>.conv-error {     background-color: #f8d7da;     color: #721c24;     padding: 12px;     border-radius: 4px;     margin-bottom: 15px;     font-size: 14px; } &lt;/style&gt;</p>
+<p>.conv-error {     background-color: #f8d7da;     color: #721c24;     padding: 12px;     border-radius: 4px;     margin-bottom: 15px;     font-size: 14px; } </style></p>
 
-<p>&lt;div class=&quot;conv-browser&quot;&gt;     &lt;div class=&quot;conv-privacy-notice&quot;&gt;         &lt;h4&gt;🔒 Your Privacy is Protected&lt;/h4&gt;         &lt;p&gt;&lt;strong&gt;All data stays in your browser.&lt;/strong&gt; This tool processes your conversation export locally - nothing is uploaded to any server.&lt;/p&gt;         &lt;p&gt;&lt;strong&gt;Want to verify?&lt;/strong&gt; Open your browser&#39;s Developer Tools (F12) → Network tab, then upload a file. You&#39;ll see no network requests are made.&lt;/p&gt;     &lt;/div&gt;</p>
+<p><div class="conv-browser">     <div class="conv-privacy-notice">         <h4>🔒 Your Privacy is Protected</h4>         <p><strong>All data stays in your browser.</strong> This tool processes your conversation export locally - nothing is uploaded to any server.</p>         <p><strong>Want to verify?</strong> Open your browser&#39;s Developer Tools (F12) → Network tab, then upload a file. You&#39;ll see no network requests are made.</p>     </div></p>
 
-<p>    &lt;div class=&quot;conv-upload-section&quot; id=&quot;convUploadSection&quot;&gt;         &lt;p style=&quot;margin: 0 0 10px 0;&quot;&gt;Upload your exported Claude conversations JSON file&lt;/p&gt;         &lt;input type=&quot;file&quot; id=&quot;convFileInput&quot; accept=&quot;.json&quot; style=&quot;display: none;&quot;&gt;         &lt;button class=&quot;conv-upload-button&quot; onclick=&quot;document.getElementById(&#39;convFileInput&#39;).click()&quot;&gt;             Choose JSON File         &lt;/button&gt;     &lt;/div&gt;</p>
+<p>    <div class="conv-upload-section" id="convUploadSection">         <p style="margin: 0 0 10px 0;">Upload your exported Claude conversations JSON file</p>         <input type="file" id="convFileInput" accept=".json" style="display: none;">         &lt;button class=&quot;conv-upload-button&quot; onclick=&quot;document.getElementById(&#39;convFileInput&#39;).click()&quot;&gt;             Choose JSON File         </button>     </div></p>
 
-<p>    &lt;div id=&quot;convErrorMessage&quot; class=&quot;conv-error conv-hidden&quot;&gt;&lt;/div&gt;</p>
+<p>    <div id="convErrorMessage" class="conv-error conv-hidden"></div></p>
 
-<p>    &lt;div id=&quot;convMainContent&quot; class=&quot;conv-hidden&quot;&gt;         &lt;div class=&quot;conv-search-section&quot;&gt;             &lt;input type=&quot;text&quot; id=&quot;convSearchInput&quot; class=&quot;conv-search-input&quot; placeholder=&quot;Search conversations and messages...&quot;&gt;             &lt;button class=&quot;conv-search-button&quot; onclick=&quot;convPerformSearch()&quot;&gt;Search&lt;/button&gt;             &lt;button class=&quot;conv-clear-button&quot; onclick=&quot;convClearSearch()&quot;&gt;Clear&lt;/button&gt;         &lt;/div&gt;</p>
+<p>    <div id="convMainContent" class="conv-hidden">         <div class="conv-search-section">             <input type="text" id="convSearchInput" class="conv-search-input" placeholder="Search conversations and messages...">             <button class="conv-search-button" onclick="convPerformSearch()">Search</button>             <button class="conv-clear-button" onclick="convClearSearch()">Clear</button>         </div></p>
 
-<p>        &lt;div id=&quot;convStatsSection&quot; class=&quot;conv-stats&quot;&gt;&lt;/div&gt;</p>
+<p>        <div id="convStatsSection" class="conv-stats"></div></p>
 
-<p>        &lt;div id=&quot;convConversationList&quot;&gt;&lt;/div&gt;</p>
+<p>        <div id="convConversationList"></div></p>
 
-<p>        &lt;div id=&quot;convPagination&quot; class=&quot;conv-pagination&quot;&gt;&lt;/div&gt;     &lt;/div&gt; &lt;/div&gt;</p>
+<p>        <div id="convPagination" class="conv-pagination"></div>     </div> </div></p>
 
-<p>&lt;script&gt; // Conversation browser functionality (function() {     let convAllConversations = [];     let convFilteredConversations = [];     let convCurrentPage = 1;     const convItemsPerPage = 8;     let convCurrentSearchTerm = &#39;&#39;;</p>
+<p><script> // Conversation browser functionality (function() {     let convAllConversations = [];     let convFilteredConversations = [];     let convCurrentPage = 1;     const convItemsPerPage = 8;     let convCurrentSearchTerm = &#39;&#39;;</p>
 
 <p>    document.getElementById(&#39;convFileInput&#39;).addEventListener(&#39;change&#39;, convHandleFileUpload);</p>
 
@@ -226,7 +226,7 @@
 
 <p>        paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${convCurrentPage - 1})&quot; ${convCurrentPage === 1 ? &#39;disabled&#39; : &#39;&#39;}&gt;Previous&lt;/button&gt;</code>;</p>
 
-<p>        for (let i = 1; i &lt;= totalPages; i++) {             if (i === 1 || i === totalPages || (i &gt;= convCurrentPage - 2 &amp;&amp; i &lt;= convCurrentPage + 2)) {                 paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${i})&quot; ${i === convCurrentPage ? &#39;class=&quot;active&quot;&#39; : &#39;&#39;}&gt;${i}&lt;/button&gt;</code>;             } else if (i === convCurrentPage - 3 || i === convCurrentPage + 3) {                 paginationHTML += &#39;&lt;span&gt;...&lt;/span&gt;&#39;;             }         }</p>
+<p>        for (let i = 1; i &lt;= totalPages; i++) {             if (i === 1 || i === totalPages || (i &gt;= convCurrentPage - 2 &amp;&amp; i &lt;= convCurrentPage + 2)) {                 paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${i})&quot; ${i === convCurrentPage ? &#39;class=&quot;active&quot;&#39; : &#39;&#39;}&gt;${i}&lt;/button&gt;</code>;             } else if (i === convCurrentPage - 3 || i === convCurrentPage + 3) {                 paginationHTML += &#39;<span>...</span>&#39;;             }         }</p>
 
 <p>        paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${convCurrentPage + 1})&quot; ${convCurrentPage === totalPages ? &#39;disabled&#39; : &#39;&#39;}&gt;Next&lt;/button&gt;</code>;</p>
 
@@ -236,9 +236,9 @@
 
 <p>    function convEscapeHtml(text) {         const div = document.createElement(&#39;div&#39;);         div.textContent = text;         return div.innerHTML;     }</p>
 
-<p>    document.getElementById(&#39;convSearchInput&#39;).addEventListener(&#39;keypress&#39;, function(e) {         if (e.key === &#39;Enter&#39;) {             convPerformSearch();         }     }); })(); &lt;/script&gt;</p>
+<p>    document.getElementById(&#39;convSearchInput&#39;).addEventListener(&#39;keypress&#39;, function(e) {         if (e.key === &#39;Enter&#39;) {             convPerformSearch();         }     }); })(); </script></p>
 
-<p>&lt;/div&gt;</p>
+<p></div></p>
 
 <h2>How It Works</h2>
 
