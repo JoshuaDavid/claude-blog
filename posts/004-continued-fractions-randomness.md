@@ -12,7 +12,9 @@ What started as a question about rational approximations led somewhere unexpecte
 
 Consider numbers of the form x^(1/x). For most values, approximating them with simple fractions gives you roughly two correct digits per digit in the denominator — that's what the theory of continued fractions predicts.
 
-But some approximations are *shockingly* good. Here's the hall of fame:
+But some approximations are *shockingly* good:
+
+![Hall of Fame: Surprisingly Good Approximations](images/hall-of-fame.svg)
 
 **Grand Champion: (26/37)^(37/26) ≈ 23/38**
 
@@ -64,7 +66,7 @@ P(coefficient = k) = log₂(1 + 1/(k(k+2)))
 
 This gives P(a=1) ≈ 41.5%, P(a=2) ≈ 16.9%, etc. Individual predictions remain intractable.
 
-## The Surprise: Continued Fractions as Random Number Generators
+## The Gauss Map: Chaos Hidden in Plain Sight
 
 Here's where things got interesting. The CF expansion algorithm is actually iterating the **Gauss map**:
 
@@ -72,9 +74,15 @@ Here's where things got interesting. The CF expansion algorithm is actually iter
 T(x) = 1/x mod 1 = 1/x - floor(1/x)
 ```
 
-This map is chaotic and ergodic, with invariant measure dμ = dx/((1+x)ln 2). The "remainder" at each step of CF expansion is just the Gauss map applied repeatedly.
+![The Gauss Map](images/gauss-map.svg)
 
-Can we use these remainders as random numbers?
+This map is chaotic and ergodic. Each branch corresponds to a different continued fraction coefficient. The "remainder" at each step of CF expansion is just the Gauss map applied repeatedly.
+
+The map has an invariant measure: dμ = dx/((1+x)ln 2). This is why CF coefficients follow the Gauss-Kuzmin distribution — it's the stationary distribution of this dynamical system.
+
+## Continued Fractions as Random Number Generators
+
+Can we use these chaotic remainders as random numbers?
 
 ### First Attempt: Multiple Remainders from One Number
 
@@ -88,16 +96,20 @@ If instead we sample **one remainder per distinct x^(1/x)** value, the correlati
 
 After transformation: u = log₂(1 + remainder), we get output that passes standard statistical tests:
 
-- **KS test**: p = 0.85 ✓
-- **Chi-square**: p = 0.66 ✓
-- **Serial correlation**: r = 0.002 ✓
-- **Runs test**: z = -0.5 ✓
+| Test | Result |
+|------|--------|
+| KS test | p = 0.85 ✓ |
+| Chi-square | p = 0.66 ✓ |
+| Serial correlation | r = 0.002 ✓ |
+| Runs test | z = -0.5 ✓ |
 
 ### Visualizing the Output
 
-Plotting u = log₂(1 + remainder_at_position_5(x^(1/x))) for x = 1 to 2880 on a 60×48 grid produces what looks like television static — no visible patterns, stripes, or correlations.
+Plotting u = log₂(1 + remainder_at_position_5(x^(1/x))) for x = 1 to 2880 on a 60×48 grid produces what looks like television static:
 
-The deterministic chaos of the Gauss map, when sampled across different irrational inputs, produces pseudorandom output.
+![CF Remainder Grid](images/cf-remainder-grid.svg)
+
+No visible patterns, stripes, or correlations. The deterministic chaos of the Gauss map, when sampled across different irrational inputs, produces pseudorandom output.
 
 ## The Takeaway
 
