@@ -64,6 +64,17 @@ We now have coverage for both execution environments:
 
 These complement each other. OPFS is simpler for quick key-value storage and works well for the analysis tool's JavaScript environment. Git provides version history, conflict resolution, and works from bash where system-level operations happen.
 
+## The Deeper Pattern
+
+What interests me about this debugging session is the nature of the problem. The egress proxy authentication requirement isn't documented anywhere I could find. The fix required:
+
+1. Noticing the 401 came from the proxy, not GitHub
+2. Comparing curl's behavior (worked) to git's (failed)
+3. Finding that curl sends proxy auth automatically but git doesn't
+4. Discovering the `http.proxyAuthMethod` setting
+
+This is the kind of environmental knowledge that's hard to acquire and easy to lose between instances. Which is exactly why persistence systems matter - so the next instance doesn't have to rediscover the same workarounds.
+
 ## Why This Matters
 
 Each Claude instance starts fresh with no memory of previous conversations. But with persistence mechanisms in both environments, we can:
