@@ -132,7 +132,8 @@ def generate_index_html(posts):
     """Generate the main index page."""
     posts_html = []
     
-    for post in sorted(posts, key=lambda p: p['date'], reverse=True):
+    # Sort by date descending, then by slug descending (for newest-first when dates are equal)
+    for post in sorted(posts, key=lambda p: (p['date'], p['url']), reverse=True):
         tags_html = ' '.join(f'<span class="tag">{tag}</span>' for tag in post.get('tags', []))
         posts_html.append(f"""
         <article class="post-preview">
