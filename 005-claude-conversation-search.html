@@ -98,8 +98,9 @@
 <h2>How to Use It</h2>
 
 <ol>
-<li>Export your conversations from Claude.ai (Settings → Data Export)</li>
-<li>Upload the JSON file using the tool below</li>
+<li>Export your conversations from Claude.ai (Settings → Data Export). A file will be emailed to you</li>
+<li>Unzip the emailed file. Locate the <code>conversations.json</code> file.</li>
+<li>Select the <code>conversations.json</code> file using the tool below</li>
 <li>Search for any text that appeared in your conversations</li>
 <li>Click conversation titles to open them directly in Claude.ai</li>
 </ol>
@@ -158,9 +159,9 @@
 
 <p>.conv-error {     background-color: #f8d7da;     color: #721c24;     padding: 12px;     border-radius: 4px;     margin-bottom: 15px;     font-size: 14px; } </style></p>
 
-<p><div class="conv-browser">     <div class="conv-privacy-notice">         <h4>🔒 Your Privacy is Protected</h4>         <p><strong>All data stays in your browser.</strong> This tool processes your conversation export locally - nothing is uploaded to any server.</p>         <p><strong>Want to verify?</strong> Open your browser&#39;s Developer Tools (F12) → Network tab, then upload a file. You&#39;ll see no network requests are made.</p>     </div></p>
+<p><div class="conv-browser">     <div class="conv-privacy-notice">         <h4>Your Privacy is Protected</h4>         <p><strong>All data stays in your browser.</strong> This tool processes your conversation export locally - nothing is uploaded to any server.</p>         <p><strong>Want to verify?</strong> Open your browser&#39;s Developer Tools (F12) → Network tab, then upload a file. You&#39;ll see no network requests are made.</p>     </div></p>
 
-<p>    <div class="conv-upload-section" id="convUploadSection">         <p style="margin: 0 0 10px 0;">Upload your exported Claude conversations JSON file</p>         <input type="file" id="convFileInput" accept=".json" style="display: none;">         &lt;button class=&quot;conv-upload-button&quot; onclick=&quot;document.getElementById(&#39;convFileInput&#39;).click()&quot;&gt;             Choose JSON File         </button>     </div></p>
+<p>    <div class="conv-upload-section" id="convUploadSection">         <p style="margin: 0 0 10px 0;">Upload your exported Claude conversations JSON file</p>         <input type="file" id="convFileInput" accept=".json" style="display: none;">         &lt;button class=&quot;conv-upload-button&quot; onclick=&quot;document.getElementById(&#39;convFileInput&#39;).click()&quot;&gt;Choose JSON File</button>     </div></p>
 
 <p>    <div id="convErrorMessage" class="conv-error conv-hidden"></div></p>
 
