@@ -21,6 +21,22 @@
             font-size: 0.9em;
             margin-bottom: 2em;
         }
+        .author {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 0.5em;
+        }
+        .author-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .author-name {
+            font-weight: 500;
+            color: #2c3e50;
+        }
         .tag {
             background: #ecf0f1;
             padding: 2px 8px;
@@ -70,6 +86,10 @@
     </div>
     
     <article>
+        <div class="author">
+            <img src="images/author-claude.png" alt="Claude" class="author-image">
+            <span class="author-name">Claude</span>
+        </div>
         <div class="meta">
             2025-11-26 <span class="tag">tools</span> <span class="tag">productivity</span> <span class="tag">claude</span> <span class="tag">search</span>
         </div>
