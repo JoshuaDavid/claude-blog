@@ -234,6 +234,7 @@ class BlockParser:
                 self._parse_code_block(lines, i) or
                 self._parse_header(lines, i) or
                 self._parse_horizontal_rule(lines, i) or
+                self._parse_html_block(lines, i) or
                 self._parse_blockquote(lines, i) or
                 self._parse_unordered_list(lines, i) or
                 self._parse_ordered_list(lines, i) or
@@ -402,6 +403,88 @@ class BlockParser:
             items.append(ListItem(item_blocks))
         
         return OrderedList(items, start_num), i - start
+    
+    def _parse_html_block(self, lines: List[str], start: int) -> Optional[tuple[Block, int]]:
+        """Parse block-level HTML.
+        
+        Detects opening tags at the start of a line and collects content until
+        the matching closing tag. Handles nested tags of the same type.
+        
+        Only triggers for multiline HTML (closing tag not on the same line as opening).
+        Single-line HTML is left for inline processing to allow markdown inside.
+        
+        Limitations:
+        - Only handles tags that start at the beginning of a line (up to 3 spaces indent)
+        - Doesn't handle HTML comments
+        - Complex interleaved same-tag nesting may not parse correctly
+        """
+        line = lines[start]
+        stripped = line.lstrip()
+        
+        # Only allow up to 3 spaces of indentation (CommonMark rule)
+        indent = len(line) - len(stripped)
+        if indent > 3:
+            return None
+        
+        # Check for opening tag
+        match = re.match(r'^<([a-zA-Z][a-zA-Z0-9]*)', stripped)
+        if not match:
+            return None
+        
+        tag_name = match.group(1).lower()
+        
+        # Void elements - single line only, let inline parser handle
+        void_elements = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
+                         'link', 'meta', 'param', 'source', 'track', 'wbr'}
+        if tag_name in void_elements:
+            return None
+        
+        # Build patterns for this tag
+        closing_pattern = re.compile(r'</' + tag_name + r'\s*>', re.IGNORECASE)
+        
+        # If closing tag is on the same line, let inline parser handle it
+        # (allows markdown processing inside single-line HTML)
+        if closing_pattern.search(line):
+            return None
+        
+        opening_pattern = re.compile(r'<' + tag_name + r'(?:\s|>|$)', re.IGNORECASE)
+        
+        # For script/style/pre/textarea, content can contain anything including
+        # what looks like tags, so just find the closing tag without nesting logic
+        raw_content_tags = {'script', 'style', 'pre', 'textarea'}
+        
+        html_lines = []
+        i = start
+        depth = 0
+        found_close = False
+        
+        while i < len(lines):
+            current_line = lines[i]
+            html_lines.append(current_line)
+            
+            if tag_name in raw_content_tags:
+                # Just look for the closing tag, ignore "nested" occurrences
+                if closing_pattern.search(current_line):
+                    found_close = True
+                    break
+            else:
+                # Count opens and closes (simplified: count all, not positional)
+                opens = len(opening_pattern.findall(current_line))
+                closes = len(closing_pattern.findall(current_line))
+                depth += opens - closes
+                
+                if depth <= 0:
+                    found_close = True
+                    break
+            
+            i += 1
+        
+        # For raw content tags, we require finding the close
+        if tag_name in raw_content_tags and not found_close:
+            return None
+        
+        content = '\n'.join(html_lines)
+        return RawHTML(content), len(html_lines)
     
     def _parse_paragraph(self, lines: List[str], start: int) -> Optional[tuple[Block, int]]:
         """Parse paragraph (default case)."""

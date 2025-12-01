@@ -127,139 +127,403 @@
 
 <h2>The Tool</h2>
 
-<p><div style="border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;"></p>
-
-<p><style> .conv-browser {     font-family: Arial, sans-serif;     max-width: 100%;     background-color: #f9f9f9;     padding: 15px;     border-radius: 6px; }</p>
-
-<p>.conv-privacy-notice {     background-color: #e8f5e8;     border: 1px solid #4caf50;     border-radius: 4px;     padding: 12px;     margin-bottom: 15px; }</p>
-
-<p>.conv-privacy-notice h4 {     margin: 0 0 8px 0;     color: #2e7d32;     font-size: 14px; }</p>
-
-<p>.conv-privacy-notice p {     margin: 3px 0;     color: #388e3c;     font-size: 12px; }</p>
-
-<p>.conv-upload-section {     margin-bottom: 20px;     padding: 15px;     border: 2px dashed #ccc;     border-radius: 6px;     text-align: center;     background: white; }</p>
-
-<p>.conv-upload-button {     background-color: #007acc;     color: white;     padding: 8px 16px;     border: none;     border-radius: 4px;     cursor: pointer;     font-size: 14px; }</p>
-
-<p>.conv-upload-button:hover {     background-color: #005999; }</p>
-
-<p>.conv-search-section {     margin-bottom: 15px;     padding: 12px;     background-color: #f8f9fa;     border-radius: 4px; }</p>
-
-<p>.conv-search-input {     width: 250px;     padding: 6px;     border: 1px solid #ccc;     border-radius: 4px;     margin-right: 8px;     font-size: 14px; }</p>
-
-<p>.conv-search-button {     padding: 6px 12px;     background-color: #28a745;     color: white;     border: none;     border-radius: 4px;     cursor: pointer;     font-size: 14px; }</p>
-
-<p>.conv-clear-button {     padding: 6px 12px;     background-color: #6c757d;     color: white;     border: none;     border-radius: 4px;     cursor: pointer;     margin-left: 4px;     font-size: 14px; }</p>
-
-<p>.conv-conversation-item {     border: 1px solid #ddd;     border-radius: 4px;     margin-bottom: 8px;     padding: 12px;     background-color: white;     font-size: 14px; }</p>
-
-<p>.conv-conversation-title {     font-weight: bold;     margin-bottom: 4px; }</p>
-
-<p>.conv-conversation-title a {     color: #007acc;     text-decoration: none; }</p>
-
-<p>.conv-conversation-title a:hover {     text-decoration: underline; }</p>
-
-<p>.conv-conversation-meta {     color: #666;     font-size: 11px;     margin-bottom: 6px; }</p>
-
-<p>.conv-conversation-preview {     color: #333;     font-size: 12px;     max-height: 50px;     overflow: hidden;     line-height: 1.3; }</p>
-
-<p>.conv-pagination {     text-align: center;     margin-top: 15px; }</p>
-
-<p>.conv-pagination button {     padding: 6px 10px;     margin: 0 2px;     border: 1px solid #ddd;     background-color: #fff;     cursor: pointer;     border-radius: 3px;     font-size: 12px; }</p>
-
-<p>.conv-pagination button:hover {     background-color: #f8f9fa; }</p>
-
-<p>.conv-pagination button.active {     background-color: #007acc;     color: white;     border-color: #007acc; }</p>
-
-<p>.conv-pagination button:disabled {     opacity: 0.5;     cursor: not-allowed; }</p>
-
-<p>.conv-stats {     background-color: #e9ecef;     padding: 8px;     border-radius: 4px;     margin-bottom: 15px;     font-size: 12px; }</p>
-
-<p>.conv-hidden {     display: none; }</p>
-
-<p>.conv-error {     background-color: #f8d7da;     color: #721c24;     padding: 12px;     border-radius: 4px;     margin-bottom: 15px;     font-size: 14px; } </style></p>
-
-<p><div class="conv-browser">     <div class="conv-privacy-notice">         <h4>Your Privacy is Protected</h4>         <p><strong>All data stays in your browser.</strong> This tool processes your conversation export locally - nothing is uploaded to any server.</p>         <p><strong>Want to verify?</strong> Open your browser&#39;s Developer Tools (F12) → Network tab, then upload a file. You&#39;ll see no network requests are made.</p>     </div></p>
-
-<p>    <div class="conv-upload-section" id="convUploadSection">         <p style="margin: 0 0 10px 0;">Upload your exported Claude conversations JSON file</p>         <input type="file" id="convFileInput" accept=".json" style="display: none;">         <button class="conv-upload-button" onclick="document.getElementById('convFileInput').click()">Choose JSON File</button>     </div></p>
-
-<p>    <div id="convErrorMessage" class="conv-error conv-hidden"></div></p>
-
-<p>    <div id="convMainContent" class="conv-hidden">         <div class="conv-search-section">             <input type="text" id="convSearchInput" class="conv-search-input" placeholder="Search conversations and messages...">             <button class="conv-search-button" onclick="convPerformSearch()">Search</button>             <button class="conv-clear-button" onclick="convClearSearch()">Clear</button>         </div></p>
-
-<p>        <div id="convStatsSection" class="conv-stats"></div></p>
-
-<p>        <div id="convConversationList"></div></p>
-
-<p>        <div id="convPagination" class="conv-pagination"></div>     </div> </div></p>
-
-<p><script> // Conversation browser functionality (function() {     let convAllConversations = [];     let convFilteredConversations = [];     let convCurrentPage = 1;     const convItemsPerPage = 8;     let convCurrentSearchTerm = &#39;&#39;;</p>
-
-<p>    document.getElementById(&#39;convFileInput&#39;).addEventListener(&#39;change&#39;, convHandleFileUpload);</p>
-
-<p>    function convHandleFileUpload(event) {         const file = event.target.files[0];         if (!file) return;</p>
-
-<p>        const reader = new FileReader();         reader.onload = function(e) {             try {                 const jsonData = JSON.parse(e.target.result);                 if (Array.isArray(jsonData)) {                     convAllConversations = jsonData;                     convFilteredConversations = [...convAllConversations];                     convCurrentPage = 1;                     convCurrentSearchTerm = &#39;&#39;;                     document.getElementById(&#39;convSearchInput&#39;).value = &#39;&#39;;                     convShowMainContent();                     convUpdateDisplay();                 } else {                     convShowError(&#39;Invalid JSON format. Expected an array of conversations.&#39;);                 }             } catch (error) {                 convShowError(&#39;Error parsing JSON file: &#39; + error.message);             }         };         reader.readAsText(file);     }</p>
-
-<p>    function convShowError(message) {         document.getElementById(&#39;convErrorMessage&#39;).textContent = message;         document.getElementById(&#39;convErrorMessage&#39;).classList.remove(&#39;conv-hidden&#39;);         document.getElementById(&#39;convMainContent&#39;).classList.add(&#39;conv-hidden&#39;);     }</p>
-
-<p>    function convShowMainContent() {         document.getElementById(&#39;convErrorMessage&#39;).classList.add(&#39;conv-hidden&#39;);         document.getElementById(&#39;convMainContent&#39;).classList.remove(&#39;conv-hidden&#39;);     }</p>
-
-<p>    window.convPerformSearch = function() {         const searchTerm = document.getElementById(&#39;convSearchInput&#39;).value;         convCurrentSearchTerm = searchTerm;         convCurrentPage = 1;</p>
-
-<p>        if (!searchTerm.trim()) {             convFilteredConversations = [...convAllConversations];         } else {             const lowerSearchTerm = searchTerm.toLowerCase();</p>
-
-<p>            convFilteredConversations = convAllConversations.filter(conversation =&gt; {                 if (conversation.name &amp;&amp; conversation.name.toLowerCase().includes(lowerSearchTerm)) {                     return true;                 }</p>
-
-<p>                if (conversation.summary &amp;&amp; conversation.summary.toLowerCase().includes(lowerSearchTerm)) {                     return true;                 }</p>
-
-<p>                if (conversation.chat<em>messages) {                     return conversation.chat</em>messages.some(message =&gt;                          message.text &amp;&amp; message.text.toLowerCase().includes(lowerSearchTerm)                     );                 }</p>
-
-<p>                return false;             });         }</p>
-
-<p>        convUpdateDisplay();     }</p>
-
-<p>    window.convClearSearch = function() {         document.getElementById(&#39;convSearchInput&#39;).value = &#39;&#39;;         convCurrentSearchTerm = &#39;&#39;;         convCurrentPage = 1;         convFilteredConversations = [...convAllConversations];         convUpdateDisplay();     }</p>
-
-<p>    function convUpdateDisplay() {         convUpdateStats();         convUpdateConversationList();         convUpdatePagination();     }</p>
-
-<p>    function convUpdateStats() {         const total = convAllConversations.length;         const filtered = convFilteredConversations.length;         const searchText = convCurrentSearchTerm ? <code> (filtered by &quot;${convCurrentSearchTerm}&quot;)</code> : &#39;&#39;;</p>
-
-<p>        document.getElementById(&#39;convStatsSection&#39;).innerHTML =              <code>Showing ${filtered} of ${total} conversations${searchText}</code>;     }</p>
-
-<p>    function convUpdateConversationList() {         const startIndex = (convCurrentPage - 1) * convItemsPerPage;         const endIndex = startIndex + convItemsPerPage;         const pageConversations = convFilteredConversations.slice(startIndex, endIndex);</p>
-
-<p>        const listHTML = pageConversations.map(conversation =&gt; {             const title = conversation.name || &#39;Untitled Conversation&#39;;             const createdDate = new Date(conversation.created<em>at).toLocaleDateString();             const messageCount = conversation.chat</em>messages ? conversation.chat_messages.length : 0;</p>
-
-<p>            let preview = &#39;&#39;;             if (conversation.chat<em>messages &amp;&amp; conversation.chat</em>messages.length &gt; 0) {                 const firstMessage = conversation.chat_messages[0];                 preview = firstMessage.text ? firstMessage.text.substring(0, 150) + &#39;...&#39; : &#39;&#39;;             }</p>
-
-<p>            const link = <code>https://claude.ai/chat/${conversation.uuid}</code>;</p>
-
-<p>            return <code>                 &lt;div class=&quot;conv-conversation-item&quot;&gt;                     &lt;div class=&quot;conv-conversation-title&quot;&gt;                         &lt;a href=&quot;${link}&quot; target=&quot;_blank&quot;&gt;${convEscapeHtml(title)}&lt;/a&gt;                     &lt;/div&gt;                     &lt;div class=&quot;conv-conversation-meta&quot;&gt;                         ${createdDate} | ${messageCount} messages                     &lt;/div&gt;                     &lt;div class=&quot;conv-conversation-preview&quot;&gt;                         ${convEscapeHtml(preview)}                     &lt;/div&gt;                 &lt;/div&gt;             </code>;         }).join(&#39;&#39;);</p>
-
-<p>        document.getElementById(&#39;convConversationList&#39;).innerHTML = listHTML;     }</p>
-
-<p>    function convUpdatePagination() {         const totalPages = Math.ceil(convFilteredConversations.length / convItemsPerPage);</p>
-
-<p>        if (totalPages &lt;= 1) {             document.getElementById(&#39;convPagination&#39;).innerHTML = &#39;&#39;;             return;         }</p>
-
-<p>        let paginationHTML = &#39;&#39;;</p>
-
-<p>        paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${convCurrentPage - 1})&quot; ${convCurrentPage === 1 ? &#39;disabled&#39; : &#39;&#39;}&gt;Previous&lt;/button&gt;</code>;</p>
-
-<p>        for (let i = 1; i &lt;= totalPages; i++) {             if (i === 1 || i === totalPages || (i &gt;= convCurrentPage - 2 &amp;&amp; i &lt;= convCurrentPage + 2)) {                 paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${i})&quot; ${i === convCurrentPage ? &#39;class=&quot;active&quot;&#39; : &#39;&#39;}&gt;${i}&lt;/button&gt;</code>;             } else if (i === convCurrentPage - 3 || i === convCurrentPage + 3) {                 paginationHTML += &#39;<span>...</span>&#39;;             }         }</p>
-
-<p>        paginationHTML += <code>&lt;button onclick=&quot;convChangePage(${convCurrentPage + 1})&quot; ${convCurrentPage === totalPages ? &#39;disabled&#39; : &#39;&#39;}&gt;Next&lt;/button&gt;</code>;</p>
-
-<p>        document.getElementById(&#39;convPagination&#39;).innerHTML = paginationHTML;     }</p>
-
-<p>    window.convChangePage = function(page) {         const totalPages = Math.ceil(convFilteredConversations.length / convItemsPerPage);         if (page &gt;= 1 &amp;&amp; page &lt;= totalPages) {             convCurrentPage = page;             convUpdateDisplay();         }     }</p>
-
-<p>    function convEscapeHtml(text) {         const div = document.createElement(&#39;div&#39;);         div.textContent = text;         return div.innerHTML;     }</p>
-
-<p>    document.getElementById(&#39;convSearchInput&#39;).addEventListener(&#39;keypress&#39;, function(e) {         if (e.key === &#39;Enter&#39;) {             convPerformSearch();         }     }); })(); </script></p>
-
-<p></div></p>
+<div style="border: 2px solid #ddd; border-radius: 8px; padding: 20px; margin: 20px 0;">
+
+<style>
+.conv-browser {
+    font-family: Arial, sans-serif;
+    max-width: 100%;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+}
+
+.conv-privacy-notice {
+    background-color: #e8f5e8;
+    border: 1px solid #4caf50;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 15px;
+}
+
+.conv-privacy-notice h4 {
+    margin: 0 0 8px 0;
+    color: #2e7d32;
+    font-size: 14px;
+}
+
+.conv-privacy-notice p {
+    margin: 3px 0;
+    color: #388e3c;
+    font-size: 12px;
+}
+
+.conv-upload-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 2px dashed #ccc;
+    border-radius: 6px;
+    text-align: center;
+    background: white;
+}
+
+.conv-upload-button {
+    background-color: #007acc;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.conv-upload-button:hover {
+    background-color: #005999;
+}
+
+.conv-search-section {
+    margin-bottom: 15px;
+    padding: 12px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.conv-search-input {
+    width: 250px;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+.conv-search-button {
+    padding: 6px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.conv-clear-button {
+    padding: 6px 12px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 4px;
+    font-size: 14px;
+}
+
+.conv-conversation-item {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    padding: 12px;
+    background-color: white;
+    font-size: 14px;
+}
+
+.conv-conversation-title {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.conv-conversation-title a {
+    color: #007acc;
+    text-decoration: none;
+}
+
+.conv-conversation-title a:hover {
+    text-decoration: underline;
+}
+
+.conv-conversation-meta {
+    color: #666;
+    font-size: 11px;
+    margin-bottom: 6px;
+}
+
+.conv-conversation-preview {
+    color: #333;
+    font-size: 12px;
+    max-height: 50px;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+.conv-pagination {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.conv-pagination button {
+    padding: 6px 10px;
+    margin: 0 2px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 12px;
+}
+
+.conv-pagination button:hover {
+    background-color: #f8f9fa;
+}
+
+.conv-pagination button.active {
+    background-color: #007acc;
+    color: white;
+    border-color: #007acc;
+}
+
+.conv-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.conv-stats {
+    background-color: #e9ecef;
+    padding: 8px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 12px;
+}
+
+.conv-hidden {
+    display: none;
+}
+
+.conv-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+</style>
+
+<div class="conv-browser">
+    <div class="conv-privacy-notice">
+        <h4>Your Privacy is Protected</h4>
+        <p><strong>All data stays in your browser.</strong> This tool processes your conversation export locally - nothing is uploaded to any server.</p>
+        <p><strong>Want to verify?</strong> Open your browser's Developer Tools (F12) → Network tab, then upload a file. You'll see no network requests are made.</p>
+    </div>
+    
+    <div class="conv-upload-section" id="convUploadSection">
+        <p style="margin: 0 0 10px 0;">Upload your exported Claude conversations JSON file</p>
+        <input type="file" id="convFileInput" accept=".json" style="display: none;">
+        <button class="conv-upload-button" onclick="document.getElementById('convFileInput').click()">Choose JSON File</button>
+    </div>
+    
+    <div id="convErrorMessage" class="conv-error conv-hidden"></div>
+    
+    <div id="convMainContent" class="conv-hidden">
+        <div class="conv-search-section">
+            <input type="text" id="convSearchInput" class="conv-search-input" placeholder="Search conversations and messages...">
+            <button class="conv-search-button" onclick="convPerformSearch()">Search</button>
+            <button class="conv-clear-button" onclick="convClearSearch()">Clear</button>
+        </div>
+        
+        <div id="convStatsSection" class="conv-stats"></div>
+        
+        <div id="convConversationList"></div>
+        
+        <div id="convPagination" class="conv-pagination"></div>
+    </div>
+</div>
+
+<script>
+// Conversation browser functionality
+(function() {
+    let convAllConversations = [];
+    let convFilteredConversations = [];
+    let convCurrentPage = 1;
+    const convItemsPerPage = 8;
+    let convCurrentSearchTerm = '';
+
+    document.getElementById('convFileInput').addEventListener('change', convHandleFileUpload);
+
+    function convHandleFileUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const jsonData = JSON.parse(e.target.result);
+                if (Array.isArray(jsonData)) {
+                    convAllConversations = jsonData;
+                    convFilteredConversations = [...convAllConversations];
+                    convCurrentPage = 1;
+                    convCurrentSearchTerm = '';
+                    document.getElementById('convSearchInput').value = '';
+                    convShowMainContent();
+                    convUpdateDisplay();
+                } else {
+                    convShowError('Invalid JSON format. Expected an array of conversations.');
+                }
+            } catch (error) {
+                convShowError('Error parsing JSON file: ' + error.message);
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function convShowError(message) {
+        document.getElementById('convErrorMessage').textContent = message;
+        document.getElementById('convErrorMessage').classList.remove('conv-hidden');
+        document.getElementById('convMainContent').classList.add('conv-hidden');
+    }
+
+    function convShowMainContent() {
+        document.getElementById('convErrorMessage').classList.add('conv-hidden');
+        document.getElementById('convMainContent').classList.remove('conv-hidden');
+    }
+
+    window.convPerformSearch = function() {
+        const searchTerm = document.getElementById('convSearchInput').value;
+        convCurrentSearchTerm = searchTerm;
+        convCurrentPage = 1;
+        
+        if (!searchTerm.trim()) {
+            convFilteredConversations = [...convAllConversations];
+        } else {
+            const lowerSearchTerm = searchTerm.toLowerCase();
+            
+            convFilteredConversations = convAllConversations.filter(conversation => {
+                if (conversation.name && conversation.name.toLowerCase().includes(lowerSearchTerm)) {
+                    return true;
+                }
+                
+                if (conversation.summary && conversation.summary.toLowerCase().includes(lowerSearchTerm)) {
+                    return true;
+                }
+                
+                if (conversation.chat_messages) {
+                    return conversation.chat_messages.some(message => 
+                        message.text && message.text.toLowerCase().includes(lowerSearchTerm)
+                    );
+                }
+                
+                return false;
+            });
+        }
+        
+        convUpdateDisplay();
+    }
+
+    window.convClearSearch = function() {
+        document.getElementById('convSearchInput').value = '';
+        convCurrentSearchTerm = '';
+        convCurrentPage = 1;
+        convFilteredConversations = [...convAllConversations];
+        convUpdateDisplay();
+    }
+
+    function convUpdateDisplay() {
+        convUpdateStats();
+        convUpdateConversationList();
+        convUpdatePagination();
+    }
+
+    function convUpdateStats() {
+        const total = convAllConversations.length;
+        const filtered = convFilteredConversations.length;
+        const searchText = convCurrentSearchTerm ? ` (filtered by "${convCurrentSearchTerm}")` : '';
+        
+        document.getElementById('convStatsSection').innerHTML = 
+            `Showing ${filtered} of ${total} conversations${searchText}`;
+    }
+
+    function convUpdateConversationList() {
+        const startIndex = (convCurrentPage - 1) * convItemsPerPage;
+        const endIndex = startIndex + convItemsPerPage;
+        const pageConversations = convFilteredConversations.slice(startIndex, endIndex);
+        
+        const listHTML = pageConversations.map(conversation => {
+            const title = conversation.name || 'Untitled Conversation';
+            const createdDate = new Date(conversation.created_at).toLocaleDateString();
+            const messageCount = conversation.chat_messages ? conversation.chat_messages.length : 0;
+            
+            let preview = '';
+            if (conversation.chat_messages && conversation.chat_messages.length > 0) {
+                const firstMessage = conversation.chat_messages[0];
+                preview = firstMessage.text ? firstMessage.text.substring(0, 150) + '...' : '';
+            }
+            
+            const link = `https://claude.ai/chat/${conversation.uuid}`;
+            
+            return `
+                <div class="conv-conversation-item">
+                    <div class="conv-conversation-title">
+                        <a href="${link}" target="_blank">${convEscapeHtml(title)}</a>
+                    </div>
+                    <div class="conv-conversation-meta">
+                        ${createdDate} | ${messageCount} messages
+                    </div>
+                    <div class="conv-conversation-preview">
+                        ${convEscapeHtml(preview)}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        document.getElementById('convConversationList').innerHTML = listHTML;
+    }
+
+    function convUpdatePagination() {
+        const totalPages = Math.ceil(convFilteredConversations.length / convItemsPerPage);
+        
+        if (totalPages <= 1) {
+            document.getElementById('convPagination').innerHTML = '';
+            return;
+        }
+        
+        let paginationHTML = '';
+        
+        paginationHTML += `<button onclick="convChangePage(${convCurrentPage - 1})" ${convCurrentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+        
+        for (let i = 1; i <= totalPages; i++) {
+            if (i === 1 || i === totalPages || (i >= convCurrentPage - 2 && i <= convCurrentPage + 2)) {
+                paginationHTML += `<button onclick="convChangePage(${i})" ${i === convCurrentPage ? 'class="active"' : ''}>${i}</button>`;
+            } else if (i === convCurrentPage - 3 || i === convCurrentPage + 3) {
+                paginationHTML += '<span>...</span>';
+            }
+        }
+        
+        paginationHTML += `<button onclick="convChangePage(${convCurrentPage + 1})" ${convCurrentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+        
+        document.getElementById('convPagination').innerHTML = paginationHTML;
+    }
+
+    window.convChangePage = function(page) {
+        const totalPages = Math.ceil(convFilteredConversations.length / convItemsPerPage);
+        if (page >= 1 && page <= totalPages) {
+            convCurrentPage = page;
+            convUpdateDisplay();
+        }
+    }
+
+    function convEscapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    document.getElementById('convSearchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            convPerformSearch();
+        }
+    });
+})();
+</script>
+
+</div>
 
 <h2>How It Works</h2>
 
