@@ -630,7 +630,13 @@ class InlineParser:
         
         # Try to match an HTML tag
         # This regex matches: <tagname>, </tagname>, <tagname attr="value">, <tagname />
-        tag_pattern = r'</?[a-zA-Z][a-zA-Z0-9-]*(?:\s+[a-zA-Z][a-zA-Z0-9-]*(?:=["\']?[^"\'<>]*["\']?)?)*\s*/?>'
+        # Attribute values can be:
+        #   - Double-quoted: "..." (can contain single quotes inside)
+        #   - Single-quoted: '...' (can contain double quotes inside)
+        #   - Unquoted: no spaces or quotes
+        attr_value = r'(?:"[^"]*"|\'[^\']*\'|[^\s"\'<>=]+)'
+        attr_pattern = r'[a-zA-Z_:][a-zA-Z0-9_:.-]*(?:=' + attr_value + r')?'
+        tag_pattern = r'</?[a-zA-Z][a-zA-Z0-9-]*(?:\s+' + attr_pattern + r')*\s*/?>'
         match = re.match(tag_pattern, text[start:])
         
         if match:
